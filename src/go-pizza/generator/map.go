@@ -16,6 +16,6 @@ func GenerateMap(writer io.Writer, height int, width int) {
 			n := rand.Intn(len(go_pizza.IngredientList))
 			writer.Write([]byte(go_pizza.IngredientList[n].Letter))
 		}
-		writer.Write([]byte{0x0A})
+		writer.Write([]byte("\r\n"))
 	}
 }

@@ -41,8 +41,9 @@ func main() {
 	height, _ := strconv.ParseInt(result[0], 10, 32)
 	width, _ := strconv.ParseInt(result[1], 10, 32)
 
-	fmt.Printf("size: %dx%d", height, width)
+	fmt.Printf("size: %dx%d\r\n", height, width)
 
 	out := bufio.NewWriter(os.Stdout)
+	defer out.Flush()
 	generator.GenerateMap(out, int(height), int(width))
 }
