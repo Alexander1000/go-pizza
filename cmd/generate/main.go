@@ -9,7 +9,7 @@ import (
 	"strings"
 	"strconv"
 
-	"github.com/Alexander1000/go-pizza/go-pizza/generator"
+	"go-pizza/generator"
 )
 
 func main() {

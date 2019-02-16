@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/Alexander1000/go-pizza/go-pizza"
+	"go-pizza"
 )
 
 func GenerateMap(writer io.Writer, height int, width int) {
