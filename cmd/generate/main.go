@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"go-pizza/generator"
+	"log"
 )
 
 func main() {
@@ -64,7 +65,14 @@ func main() {
 
 	fmt.Printf("File: %s\r\n", *file)
 
-	out := bufio.NewWriter(os.Stdout)
+	hFile, err := os.OpenFile(*file, os.O_CREATE, 0644)
+	if err != nil {
+		log.Fatalf("File create error: %v", err)
+	}
+	defer hFile.Close()
+
+	out := bufio.NewWriter(hFile)
 	defer out.Flush()
+	out.Write([]byte(fmt.Sprintf("%d %d %d %d\r\n", height, width, minCount, maxCount)))
 	generator.GenerateMap(out, int(height), int(width))
 }
