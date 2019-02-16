@@ -6,6 +6,10 @@ import (
 	"os"
 	"fmt"
 	"regexp"
+	"strings"
+	"strconv"
+
+	"github.com/Alexander1000/go-pizza/go-pizza/generator"
 )
 
 func main() {
@@ -29,5 +33,16 @@ func main() {
 		}
 	}
 
-	fmt.Printf("size: %s", *size)
+	result := strings.Split(*size, `x`)
+	if len(result) == 1 {
+		result = strings.Split(*size, `X`)
+	}
+
+	height, _ := strconv.ParseInt(result[0], 10, 32)
+	width, _ := strconv.ParseInt(result[1], 10, 32)
+
+	fmt.Printf("size: %dx%d", height, width)
+
+	out := bufio.NewWriter(os.Stdout)
+	generator.GenerateMap(out, int(height), int(width))
 }
