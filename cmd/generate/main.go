@@ -65,14 +65,13 @@ func main() {
 
 	fmt.Printf("File: %s\r\n", *file)
 
-	hFile, err := os.OpenFile(*file, os.O_CREATE, 0644)
+	hFile, err := os.OpenFile(*file, os.O_CREATE | os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("File create error: %v", err)
 	}
 	defer hFile.Close()
+	defer hFile.Sync()
 
-	out := bufio.NewWriter(hFile)
-	defer out.Flush()
-	out.Write([]byte(fmt.Sprintf("%d %d %d %d\r\n", height, width, minCount, maxCount)))
-	generator.GenerateMap(out, int(height), int(width))
+	hFile.WriteString(fmt.Sprintf("%d %d %d %d\r\n", height, width, *minCount, *maxCount))
+	generator.GenerateMap(hFile, int(height), int(width))
 }
