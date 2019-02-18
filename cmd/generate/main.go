@@ -65,7 +65,7 @@ func main() {
 
 	fmt.Printf("File: %s\r\n", *file)
 
-	hFile, err := os.OpenFile(*file, os.O_CREATE | os.O_WRONLY, 0644)
+	hFile, err := os.OpenFile(*file, os.O_CREATE | os.O_WRONLY | os.O_TRUNC, 0644)
 	if err != nil {
 		log.Fatalf("File create error: %v", err)
 	}
