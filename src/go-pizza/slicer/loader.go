@@ -26,6 +26,7 @@ func Load(file string) (*Slicer, error) {
 		return nil, errors.New("empty file")
 	}
 
+	offset := 0
 	height, err := scanDigit(buffer)
 	if err != nil {
 		return nil, err
@@ -33,27 +34,27 @@ func Load(file string) (*Slicer, error) {
 
 	log.Printf("Height: %d", height)
 
-	heightSize := len(strconv.Itoa(int(height)))
+	offset += len(strconv.Itoa(int(height))) + 1
 
-	width, err := scanDigit(buffer[heightSize+1:])
+	width, err := scanDigit(buffer[offset:])
 	if err != nil {
 		return nil, err
 	}
 
 	log.Printf("Width: %d", width)
 
-	widthSize := len(strconv.Itoa(int(width)))
+	offset += len(strconv.Itoa(int(width))) + 1
 
-	minIngredienCount, err := scanDigit(buffer[heightSize+1+widthSize+1:])
+	minIngredienCount, err := scanDigit(buffer[offset:])
 	if err != nil {
 		return nil, err
 	}
 
 	log.Printf("Min ingredient count: %d", minIngredienCount)
 
-	minIngredienCountSize := len(strconv.Itoa(int(minIngredienCount)))
+	offset += len(strconv.Itoa(int(minIngredienCount))) + 1
 
-	maxSizeSlice, err := scanDigit(buffer[heightSize+1+widthSize+1+minIngredienCountSize+1:])
+	maxSizeSlice, err := scanDigit(buffer[offset:])
 	if err != nil {
 		return nil, err
 	}
