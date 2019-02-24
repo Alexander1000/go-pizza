@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strconv"
 	"log"
+	"github.com/Alexander1000/go-pizza/src/go-pizza"
 )
 
 const (
@@ -83,11 +84,31 @@ func (l *Loader) Load() (*Slicer, error) {
 
 	slicer.stream = make([]byte, 0, width * height)
 
+	for i := 0; i < int(height); i++ {
+		l.scanRowPizza(width, buffer)
+	}
+
 	return &slicer, nil
 }
 
-func (l *Loader) scanRowPizza(height int64, width int64, buffer []byte) {
-	
+func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, error) {
+	result := make([]byte, 0, width)
+	for i := int64(0); i < width; i++ {
+		data := buffer[i]
+		isValid := false
+		for _, ing := range go_pizza.IngredientList {
+			if string(data) == ing.Letter {
+				result = append(result, data)
+				isValid = true
+				break
+			}
+		}
+		if !isValid {
+			return []byte{}, errors.New("invalid character")
+		}
+	}
+
+	return result, nil
 }
 
 func scanDigit(buffer []byte) (int64, error) {
