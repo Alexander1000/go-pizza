@@ -35,6 +35,8 @@ func (l *Loader) Load() (*Slicer, error) {
 		return nil, errors.New("empty file")
 	}
 
+	buffer = buffer[0:n]
+
 	offset := 0
 	height, err := scanDigit(buffer)
 	if err != nil {
@@ -84,9 +86,11 @@ func (l *Loader) Load() (*Slicer, error) {
 	slicer := Slicer{}
 
 	slicer.stream = make([]byte, 0, width * height)
+	var rowData []byte
+	buffer = buffer[offset:]
 
 	for i := int64(0); i < height; i++ {
-		rowData, err := l.scanRowPizza(width, buffer)
+		rowData, err = l.scanRowPizza(width, buffer)
 		if err != nil {
 			return nil, err
 		}
@@ -114,6 +118,11 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, error) {
 		}
 
 		data := buffer[i - delta]
+		if data == byte(0x0D) || data == byte(0x0A) {
+			i--
+			continue
+		}
+
 		isValid := false
 		for _, ing := range go_pizza.IngredientList {
 			if string(data) == ing.Letter {
