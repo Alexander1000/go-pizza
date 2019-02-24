@@ -5,7 +5,8 @@ import (
 	"errors"
 	"strconv"
 	"log"
-	"github.com/Alexander1000/go-pizza/src/go-pizza"
+
+	"go-pizza"
 )
 
 const (
@@ -84,8 +85,14 @@ func (l *Loader) Load() (*Slicer, error) {
 
 	slicer.stream = make([]byte, 0, width * height)
 
-	for i := 0; i < int(height); i++ {
-		l.scanRowPizza(width, buffer)
+	for i := int64(0); i < height; i++ {
+		rowData, err := l.scanRowPizza(width, buffer)
+		if err != nil {
+			return nil, err
+		}
+		for j := int64(0); j < width; j++ {
+			slicer.stream[i * width + j] = rowData[j]
+		}
 	}
 
 	return &slicer, nil
@@ -93,8 +100,20 @@ func (l *Loader) Load() (*Slicer, error) {
 
 func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, error) {
 	result := make([]byte, 0, width)
+	delta := int64(0)
+	scanBuffSize := int64(len(buffer))
 	for i := int64(0); i < width; i++ {
-		data := buffer[i]
+		if i >= scanBuffSize {
+			buffer = make([]byte, ReadBufferSize)
+			_, err := l.file.Read(buffer)
+			if err != nil {
+				return []byte{}, err
+			}
+			scanBuffSize += int64(len(buffer))
+			delta += int64(len(buffer))
+		}
+
+		data := buffer[i - delta]
 		isValid := false
 		for _, ing := range go_pizza.IngredientList {
 			if string(data) == ing.Letter {
