@@ -60,8 +60,11 @@ func Load(file string) (*Slicer, error) {
 
 	log.Printf("Max slice size: %d", maxSizeSlice)
 
+	slicer := Slicer{}
 
-	return nil, nil
+	slicer.stream = make([]byte, 0, width * height)
+
+	return &slicer, nil
 }
 
 func scanDigit(buffer []byte) (int64, error) {
