@@ -14,7 +14,11 @@ func main() {
 		log.Fatal("File required")
 	}
 
-	slicer, err := slicer.Load(*file)
+	loader, err := slicer.NewLoader(*file)
+	if err != nil {
+		log.Fatalf("loader error: %v", err)
+	}
+	slicer, err := loader.Load()
 	if err != nil {
 		log.Fatalf("parse error: %v", err)
 	}

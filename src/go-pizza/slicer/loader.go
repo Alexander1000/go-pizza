@@ -11,14 +11,21 @@ const (
 	ReadBufferSize = 1024
 )
 
-func Load(file string) (*Slicer, error) {
+type Loader struct {
+	file *os.File
+}
+
+func NewLoader(file string) (*Loader, error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
 	}
+	return &Loader{file: f}, nil
+}
 
+func (l *Loader) Load() (*Slicer, error) {
 	buffer := make([]byte, ReadBufferSize, ReadBufferSize)
-	n, err := f.Read(buffer)
+	n, err := l.file.Read(buffer)
 	if err != nil {
 		return nil, err
 	}
@@ -60,12 +67,27 @@ func Load(file string) (*Slicer, error) {
 	}
 
 	log.Printf("Max slice size: %d", maxSizeSlice)
+	offset += len(strconv.Itoa(int(maxSizeSlice)))
+	spaces := 0
+
+	for _, b := range buffer[offset:] {
+		if b == byte(0x0D) || b == byte(0x0A) {
+			spaces++
+			continue
+		}
+		break
+	}
+	offset += spaces
 
 	slicer := Slicer{}
 
 	slicer.stream = make([]byte, 0, width * height)
 
 	return &slicer, nil
+}
+
+func (l *Loader) scanRowPizza(height int64, width int64, buffer []byte) {
+	
 }
 
 func scanDigit(buffer []byte) (int64, error) {
