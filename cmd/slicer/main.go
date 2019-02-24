@@ -18,7 +18,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("parse error: %v", err)
 	}
-	if slicer != nil {
+	if slicer == nil {
 		log.Fatal("empty slicer given")
 	}
 }

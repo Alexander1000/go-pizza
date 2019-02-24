@@ -4,6 +4,7 @@ import (
 	"os"
 	"errors"
 	"strconv"
+	"log"
 )
 
 const (
@@ -16,7 +17,7 @@ func Load(file string) (*Slicer, error) {
 		return nil, err
 	}
 
-	buffer := make([]byte, 0, ReadBufferSize)
+	buffer := make([]byte, ReadBufferSize, ReadBufferSize)
 	n, err := f.Read(buffer)
 	if err != nil {
 		return nil, err
@@ -52,6 +53,38 @@ func Load(file string) (*Slicer, error) {
 	if height < 0 {
 		return nil, errors.New("invalid height size")
 	}
+
+	log.Printf("Height: %d", height)
+
+	widthSize := 0
+	for _, b := range buffer[heightSize+1:] {
+		if b == byte(0x20) {
+			break
+		}
+		if b >= byte('0') && b <= byte('9') {
+			widthSize++
+		} else {
+			err = errors.New("invalid character")
+			break
+		}
+	}
+
+	if widthSize == 0 {
+		return nil, errors.New("empty width")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	width, err := strconv.ParseInt(string(buffer[heightSize+1:heightSize + 1 + widthSize]), 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	if width < 0 {
+		return nil, errors.New("invalid width size")
+	}
+
+	log.Printf("Width: %d", width)
 
 	return nil, nil
 }
