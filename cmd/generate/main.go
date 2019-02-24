@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"strings"
 	"strconv"
+	"log"
 
 	"go-pizza/generator"
-	"log"
 )
 
 func main() {
