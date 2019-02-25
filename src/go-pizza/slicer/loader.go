@@ -85,12 +85,12 @@ func (l *Loader) Load() (*Slicer, error) {
 
 	slicer := Slicer{}
 
-	slicer.stream = make([]byte, 0, width * height)
+	slicer.stream = make([]byte, width * height, width * height)
 	var rowData []byte
 	buffer = buffer[offset:]
 
 	for i := int64(0); i < height; i++ {
-		rowData, err = l.scanRowPizza(width, buffer)
+		rowData, buffer, err = l.scanRowPizza(width, buffer)
 		if err != nil {
 			return nil, err
 		}
@@ -102,7 +102,7 @@ func (l *Loader) Load() (*Slicer, error) {
 	return &slicer, nil
 }
 
-func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, error) {
+func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error) {
 	result := make([]byte, 0, width)
 	delta := int64(0)
 	scanBuffSize := int64(len(buffer))
@@ -111,7 +111,7 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, error) {
 			buffer = make([]byte, ReadBufferSize)
 			_, err := l.file.Read(buffer)
 			if err != nil {
-				return []byte{}, err
+				return []byte{}, []byte{}, err
 			}
 			scanBuffSize += int64(len(buffer))
 			delta += int64(len(buffer))
@@ -132,11 +132,11 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, error) {
 			}
 		}
 		if !isValid {
-			return []byte{}, errors.New("invalid character")
+			return []byte{}, []byte{}, errors.New("invalid character")
 		}
 	}
 
-	return result, nil
+	return result, buffer, nil
 }
 
 func scanDigit(buffer []byte) (int64, error) {
