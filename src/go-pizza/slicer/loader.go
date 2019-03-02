@@ -108,10 +108,8 @@ func (l *Loader) Load() (*Slicer, error) {
 func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error) {
 	result := make([]byte, 0, width)
 	scanBuffSize := int64(len(buffer))
-	cutSize := 0
 	cursor := int64(0)
 	for i := int64(0); i < width; i++ {
-		cutSize++
 		cursor++
 
 		if i >= scanBuffSize {
@@ -121,7 +119,6 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error
 				return []byte{}, []byte{}, err
 			}
 			scanBuffSize += int64(len(buffer))
-			cutSize = 1
 			cursor = 0
 		}
 
@@ -144,7 +141,7 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error
 		}
 	}
 
-	return result, buffer[cutSize-1:], nil
+	return result, buffer[cursor-1:], nil
 }
 
 func scanDigit(buffer []byte) (int64, error) {
