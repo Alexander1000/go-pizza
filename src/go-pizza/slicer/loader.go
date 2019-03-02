@@ -83,9 +83,12 @@ func (l *Loader) Load() (*Slicer, error) {
 	}
 	offset += spaces
 
-	slicer := Slicer{}
+	slicer := Slicer{
+		width: width,
+		height: height,
+		stream: make([]byte, width * height, width * height),
+	}
 
-	slicer.stream = make([]byte, width * height, width * height)
 	var rowData []byte
 	buffer = buffer[offset:]
 

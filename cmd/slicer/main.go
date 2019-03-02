@@ -25,4 +25,6 @@ func main() {
 	if slicer == nil {
 		log.Fatal("empty slicer given")
 	}
+
+	slicer.Scan()
 }
