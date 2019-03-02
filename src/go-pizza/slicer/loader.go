@@ -105,12 +105,13 @@ func (l *Loader) Load() (*Slicer, error) {
 func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error) {
 	result := make([]byte, 0, width)
 	scanBuffSize := int64(len(buffer))
+
 	cursor := int64(0)
 	for i := int64(0); i < width; i++ {
 		cursor++
 
-		if i >= scanBuffSize {
-			buffer = make([]byte, ReadBufferSize)
+		if cursor >= scanBuffSize {
+			buffer = make([]byte, ReadBufferSize, ReadBufferSize)
 			_, err := l.file.Read(buffer)
 			if err != nil {
 				return []byte{}, []byte{}, err
