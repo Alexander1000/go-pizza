@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"go-pizza"
+	"fmt"
 )
 
 const (
@@ -95,8 +96,10 @@ func (l *Loader) Load() (*Slicer, error) {
 			return nil, err
 		}
 		for j := int64(0); j < width; j++ {
+			fmt.Print(string(rowData[j]))
 			slicer.stream[i * width + j] = rowData[j]
 		}
+		fmt.Print("\n")
 	}
 
 	return &slicer, nil
@@ -104,9 +107,13 @@ func (l *Loader) Load() (*Slicer, error) {
 
 func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error) {
 	result := make([]byte, 0, width)
-	delta := int64(0)
 	scanBuffSize := int64(len(buffer))
+	cutSize := 0
+	cursor := int64(0)
 	for i := int64(0); i < width; i++ {
+		cutSize++
+		cursor++
+
 		if i >= scanBuffSize {
 			buffer = make([]byte, ReadBufferSize)
 			_, err := l.file.Read(buffer)
@@ -114,10 +121,11 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error
 				return []byte{}, []byte{}, err
 			}
 			scanBuffSize += int64(len(buffer))
-			delta += int64(len(buffer))
+			cutSize = 1
+			cursor = 0
 		}
 
-		data := buffer[i - delta]
+		data := buffer[cursor]
 		if data == byte(0x0D) || data == byte(0x0A) {
 			i--
 			continue
@@ -136,7 +144,7 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error
 		}
 	}
 
-	return result, buffer, nil
+	return result, buffer[cutSize-1:], nil
 }
 
 func scanDigit(buffer []byte) (int64, error) {
