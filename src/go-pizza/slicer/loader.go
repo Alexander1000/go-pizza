@@ -7,7 +7,6 @@ import (
 	"log"
 
 	"go-pizza"
-	"fmt"
 )
 
 const (
@@ -75,7 +74,7 @@ func (l *Loader) Load() (*Slicer, error) {
 	offset += len(strconv.Itoa(int(maxSizeSlice)))
 	spaces := 0
 
-	for _, b := range buffer[offset:] {
+	for _, b := range buffer[offset+1:] {
 		if b == byte(0x0D) || b == byte(0x0A) {
 			spaces++
 			continue
@@ -96,10 +95,8 @@ func (l *Loader) Load() (*Slicer, error) {
 			return nil, err
 		}
 		for j := int64(0); j < width; j++ {
-			fmt.Print(string(rowData[j]))
 			slicer.stream[i * width + j] = rowData[j]
 		}
-		fmt.Print("\n")
 	}
 
 	return &slicer, nil
@@ -141,7 +138,7 @@ func (l *Loader) scanRowPizza(width int64, buffer []byte) ([]byte, []byte, error
 		}
 	}
 
-	return result, buffer[cursor-1:], nil
+	return result, buffer[cursor:], nil
 }
 
 func scanDigit(buffer []byte) (int64, error) {
