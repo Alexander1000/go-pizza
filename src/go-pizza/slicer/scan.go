@@ -3,11 +3,13 @@ package slicer
 import (
 	"go-pizza/shape"
 	"fmt"
+	"sort"
 )
 
 func (s *Slicer) Scan() {
 	s.slices = make([]Slice, 0)
 	shapeList := shape.Generate(s.minSlice, s.maxSlice)
+	sort.Sort(shape.Sort(shapeList))
 
 	for i := int64(0); i < s.height; i++ {
 		for j := int64(0); j < s.width; j++ {
