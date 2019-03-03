@@ -30,7 +30,9 @@ func (s *Slicer) Scan() {
 			countEmpty++
 		}
 	}
+	fmt.Printf("Total cells: %d\n", len(s.filled))
 	fmt.Printf("Empty fields: %d\n", countEmpty)
+	fmt.Printf("Percentage of empties: %f%%\n", float64(countEmpty) * 100 / float64(len(s.filled)))
 }
 
 func (s *Slicer) validateShape(x, y int64, shape shape.Shape) bool {
