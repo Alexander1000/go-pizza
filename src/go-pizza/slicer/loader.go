@@ -89,7 +89,7 @@ func (l *Loader) Load() (*Slicer, error) {
 		stream: make([]byte, width * height, width * height),
 		filled: make([]bool, width * height, width * height),
 		minSlice: int(minIngredienCount),
-		maxSlice: int(maxSizeSlice),
+		maxSlice: int(maxSizeSlice) * len(go_pizza.IngredientList),
 	}
 
 	var rowData []byte

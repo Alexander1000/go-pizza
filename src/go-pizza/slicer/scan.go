@@ -11,6 +11,7 @@ func (s *Slicer) Scan() {
 		for j := int64(0); j < s.width; j++ {
 			for _, shape := range shapeList {
 				if s.validateShape(i, j, shape) {
+					// make fill
 					continue
 				}
 			}
@@ -19,5 +20,17 @@ func (s *Slicer) Scan() {
 }
 
 func (s *Slicer) validateShape(x, y int64, shape shape.Shape) bool {
-	return false
+	if !s.validateShapeForFill(x, y, shape) {
+		return false
+	}
+	assorti := make(map[byte]bool)
+	stream := s.getStreamForShape(x, y, shape)
+	for _, data := range stream {
+		assorti[data] = true
+	}
+
+	if len(assorti) != s.minSlice {
+		return false
+	}
+	return true
 }
