@@ -87,6 +87,9 @@ func (l *Loader) Load() (*Slicer, error) {
 		width: width,
 		height: height,
 		stream: make([]byte, width * height, width * height),
+		filled: make([]bool, width * height, width * height),
+		minSlice: int(minIngredienCount),
+		maxSlice: int(maxSizeSlice),
 	}
 
 	var rowData []byte
