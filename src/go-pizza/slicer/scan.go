@@ -24,6 +24,13 @@ func (s *Slicer) Scan() {
 		fmt.Printf("(x: %d; y: %d; shape(height: %d; width: %d))\n", slice.X, slice.Y, slice.Shape.Height, slice.Shape.Width)
 	}
 	fmt.Printf("count slices: %d\n", len(s.slices))
+	countEmpty := 0
+	for _, filled := range s.filled {
+		if !filled {
+			countEmpty++
+		}
+	}
+	fmt.Printf("Empty fields: %d\n", countEmpty)
 }
 
 func (s *Slicer) validateShape(x, y int64, shape shape.Shape) bool {
