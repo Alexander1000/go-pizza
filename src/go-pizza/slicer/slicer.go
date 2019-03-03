@@ -11,6 +11,7 @@ type Slicer struct {
 	filled []bool
 	minSlice int
 	maxSlice int
+	slices []Slice
 }
 
 func (s *Slicer) getOffset(x, y int64) int64 {
@@ -39,4 +40,14 @@ func (s *Slicer) validateShapeForFill(x, y int64, shape shape.Shape) bool {
 	}
 
 	return true
+}
+
+func (s *Slicer) fill(x, y int64, shape shape.Shape) {
+	s.slices = append(s.slices, Slice{X: x, Y: y, Shape: shape})
+	for i := 0; i < shape.Height; i++ {
+		offset := s.getOffset(x + int64(i), y)
+		for j := 0; j < shape.Width; j++ {
+			s.filled[offset + int64(j)] = true
+		}
+	}
 }

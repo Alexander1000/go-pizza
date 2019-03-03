@@ -5,14 +5,15 @@ import (
 )
 
 func (s *Slicer) Scan() {
+	s.slices = make([]Slice, 0)
 	shapeList := shape.Generate(s.minSlice, s.maxSlice)
 
 	for i := int64(0); i < s.height; i++ {
 		for j := int64(0); j < s.width; j++ {
 			for _, shape := range shapeList {
 				if s.validateShape(i, j, shape) {
-					// make fill
-					continue
+					s.fill(j, i, shape)
+					break
 				}
 			}
 		}
