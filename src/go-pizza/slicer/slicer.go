@@ -51,3 +51,14 @@ func (s *Slicer) fill(x, y int64, shape shape.Shape) {
 		}
 	}
 }
+
+func (s *Slicer) findSlice(x, y int64) *Slice {
+	for _, slice := range s.slices {
+		if slice.X <= x && slice.Y <= y {
+			if int64(slice.Shape.Height) >= y - slice.Y && int64(slice.Shape.Width) >= x - slice.X {
+				return &slice
+			}
+		}
+	}
+	return nil
+}
