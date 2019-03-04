@@ -11,6 +11,7 @@ func (s *Slicer) Scan() {
 	shapeList := shape.Generate(s.minSlice, s.maxSlice)
 	sort.Sort(shape.Sort(shapeList))
 
+	// первичная разметка
 	for i := int64(0); i < s.height; i++ {
 		for j := int64(0); j < s.width; j++ {
 			for _, shape := range shapeList {
@@ -32,9 +33,14 @@ func (s *Slicer) Scan() {
 			countEmpty++
 		}
 	}
+	percentEmpty := float64(countEmpty) * 100 / float64(len(s.filled))
 	fmt.Printf("Total cells: %d\n", len(s.filled))
 	fmt.Printf("Empty fields: %d\n", countEmpty)
-	fmt.Printf("Percentage of empties: %0.02f%%\n", float64(countEmpty) * 100 / float64(len(s.filled)))
+	fmt.Printf("Percentage of empties: %0.02f%%\n", percentEmpty)
+
+	if countEmpty > 0 && percentEmpty > 0.5 {
+		s.calibrate()
+	}
 }
 
 func (s *Slicer) validateShape(x, y int64, shape shape.Shape) bool {
