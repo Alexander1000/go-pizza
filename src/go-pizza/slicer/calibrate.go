@@ -60,6 +60,21 @@ func (s *Slicer) calibrate() {
 			Filled: make([]bool, sizeSubSlicerHeight * sizeSubSlicerWidth, sizeSubSlicerHeight * sizeSubSlicerWidth),
 		}
 
+		slices := make([]Slice, 0)
+		for x := startX; x < stopX; x++ {
+			for y := startY; y < stopY; y++ {
+				slice := s.findSlice(int64(x), int64(y))
+				if slice != nil {
+					if slice.X >= int64(startX) &&
+						slice.Y >= int64(startY) &&
+						slice.X + int64(slice.Shape.Width) <= int64(stopX) &&
+						slice.Y + int64(slice.Shape.Height) <= int64(stopY) {
+						slices = append(slices, *slice)
+					}
+				}
+			}
+		}
+
 		for i := 0; i < sizeSubSlicerHeight; i++ {
 			offset := s.getOffset(int64(startX) + int64(i), int64(startY))
 			for index, filled := range s.filled[offset : offset+int64(sizeSubSlicerWidth)] {
