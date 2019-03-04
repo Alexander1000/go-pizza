@@ -44,11 +44,11 @@ func (s *Slicer) calibrate() {
 
 	for _, blackPoint := range blackPointList {
 		// try optimize/ defragmentation
-		startX := math.Max(float64(blackPoint.X) - float64(s.maxSlice) * 1.5, 0)
-		startY := math.Max(float64(blackPoint.Y) - float64(s.maxSlice) * 1.5, 0)
+		startX := math.Max(float64(blackPoint.X) - float64(s.maxSlice) * 1.2, 0)
+		startY := math.Max(float64(blackPoint.Y) - float64(s.maxSlice) * 1.2, 0)
 
-		stopX := math.Min(float64(blackPoint.X) + float64(s.maxSlice) * 1.5, float64(s.width))
-		stopY := math.Min(float64(blackPoint.Y) + float64(s.maxSlice) * 1.5, float64(s.height))
+		stopX := math.Min(float64(blackPoint.X) + float64(s.maxSlice) * 1.2, float64(s.width))
+		stopY := math.Min(float64(blackPoint.Y) + float64(s.maxSlice) * 1.2, float64(s.height))
 
 		sizeSubSlicerWidth := int(stopX - startX)
 		sizeSubSlicerHeight := int(stopY - startY)
@@ -74,6 +74,8 @@ func (s *Slicer) calibrate() {
 				}
 			}
 		}
+
+		fmt.Printf("Count slices for subslice: %d\n", len(slices))
 
 		for i := 0; i < sizeSubSlicerHeight; i++ {
 			offset := s.getOffset(int64(startX) + int64(i), int64(startY))
