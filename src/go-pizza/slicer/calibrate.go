@@ -48,15 +48,7 @@ func (s *Slicer) calibrate() {
 	subSliceList := make([]*subSliceStatistic, 0, len(blackPointList))
 
 	for _, blackPoint := range blackPointList {
-		// try optimize/ defragmentation
-		startX := math.Max(float64(blackPoint.X) - float64(s.maxSlice) * 1.5, 0)
-		startY := math.Max(float64(blackPoint.Y) - float64(s.maxSlice) * 1.5, 0)
-
-		stopX := math.Min(float64(blackPoint.X) + float64(s.maxSlice) * 1.5, float64(s.width))
-		stopY := math.Min(float64(blackPoint.Y) + float64(s.maxSlice) * 1.5, float64(s.height))
-
-		count := s.countEmptyInSector(&coord.Point{X: int64(startX), Y: int64(startY)}, &coord.Point{X: int64(stopX), Y: int64(stopY)})
-
+		count := s.countEmptyInSector(s.getRectangleAroundPoint(blackPoint))
 		subSliceList = append(subSliceList, &subSliceStatistic{Point: blackPoint, CountEmpty: count})
 	}
 
@@ -65,6 +57,14 @@ func (s *Slicer) calibrate() {
 	for _, sbSlice := range subSliceList {
 		fmt.Printf("Empty fields: %d\n", sbSlice.CountEmpty)
 	}
+}
+
+func (s *Slicer) getRectangleAroundPoint(point *coord.Point) (*coord.Point, *coord.Point) {
+	startX := math.Max(float64(point.X) - float64(s.maxSlice) * 1.5, 0)
+	startY := math.Max(float64(point.Y) - float64(s.maxSlice) * 1.5, 0)
+	stopX := math.Min(float64(point.X) + float64(s.maxSlice) * 1.5, float64(s.width))
+	stopY := math.Min(float64(point.Y) + float64(s.maxSlice) * 1.5, float64(s.height))
+	return &coord.Point{X: int64(startX), Y: int64(startY)}, &coord.Point{X: int64(stopX), Y: int64(stopY)}
 }
 
 func (s *Slicer) countEmptyInSector(start *coord.Point, stop *coord.Point) int {
