@@ -7,3 +7,13 @@ type SubSlicer struct {
 	Filled []bool
 	Slices []Slice
 }
+
+func (s *SubSlicer) CountEmpty() int {
+	count := 0
+	for _, filled := range s.Filled {
+		if !filled {
+			count++
+		}
+	}
+	return count
+}

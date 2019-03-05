@@ -47,13 +47,15 @@ func (s *Slicer) calibrate() {
 		startX := math.Max(float64(blackPoint.X) - float64(s.maxSlice) * 1.2, 0)
 		startY := math.Max(float64(blackPoint.Y) - float64(s.maxSlice) * 1.2, 0)
 
-		stopX := math.Min(float64(blackPoint.X) + float64(s.maxSlice) * 1.2, float64(s.width))
-		stopY := math.Min(float64(blackPoint.Y) + float64(s.maxSlice) * 1.2, float64(s.height))
+		stopX := math.Min(float64(blackPoint.X) + float64(s.maxSlice) * 1.2, float64(s.width) - 1)
+		stopY := math.Min(float64(blackPoint.Y) + float64(s.maxSlice) * 1.2, float64(s.height) - 1)
 
 		subSlice := s.importToSubSlice(int64(startX), int64(startY), int64(stopX), int64(stopY))
 		if subSlice == nil {
 			fmt.Print("Fiasko\n")
 		}
+
+		fmt.Printf("Empty fields: %d\n", subSlice.CountEmpty())
 	}
 }
 
@@ -95,11 +97,9 @@ func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.
 
 	for i := 0; i < sizeSubSlicerHeight; i++ {
 		offset := s.getOffset(int64(startX) + int64(i), int64(startY))
-		for index, filled := range s.filled[offset : offset+int64(sizeSubSlicerWidth)] {
-			subSlicer.Filled[i * sizeSubSlicerWidth + index] = filled
-		}
-		for index, data := range s.stream[offset : offset+int64(sizeSubSlicerWidth)] {
-			subSlicer.Buffer[i * sizeSubSlicerWidth + index] = data
+		for j := 0; j < sizeSubSlicerWidth; j++ {
+			subSlicer.Filled[i * sizeSubSlicerWidth + j] = s.filled[offset + int64(j)]
+			subSlicer.Buffer[i * sizeSubSlicerWidth + j] = s.stream[offset + int64(j)]
 		}
 	}
 
