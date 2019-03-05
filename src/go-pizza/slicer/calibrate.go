@@ -5,6 +5,7 @@ import (
 	"go-pizza/subslice"
 	"math"
 	"go-pizza/coord"
+	"sort"
 )
 
 func (s *Slicer) calibrate() {
@@ -59,11 +60,13 @@ func (s *Slicer) calibrate() {
 		}
 
 		subSliceList = append(subSliceList, subSlice)
-
-		fmt.Printf("Empty fields: %d\n", subSlice.CountEmpty())
 	}
 
-	// todo выбрать subslice with maximum count empties и оптимизировать их
+	sort.Sort(subslice.Sort(subSliceList))
+
+	for _, sbSlice := range subSliceList {
+		fmt.Printf("Empty fields: %d\n", sbSlice.CountEmpty())
+	}
 }
 
 func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.SubSlicer {
