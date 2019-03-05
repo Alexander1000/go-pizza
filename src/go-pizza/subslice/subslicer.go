@@ -6,14 +6,20 @@ type SubSlicer struct {
 	Buffer []byte
 	Filled []bool
 	Slices []Slice
+	countEmpty *int
 }
 
 func (s *SubSlicer) CountEmpty() int {
+	if s.countEmpty != nil {
+		return *s.countEmpty
+	}
+
 	count := 0
 	for _, filled := range s.Filled {
 		if !filled {
 			count++
 		}
 	}
+	s.countEmpty = &count
 	return count
 }

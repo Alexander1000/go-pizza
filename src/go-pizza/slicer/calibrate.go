@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"go-pizza/subslice"
 	"math"
+	"go-pizza/coord"
 )
 
 func (s *Slicer) calibrate() {
-	blackPointList := make([]BlackPoint, 0)
+	blackPointList := make([]coord.Point, 0)
 
 	fmt.Println("Black points")
 
@@ -24,7 +25,7 @@ func (s *Slicer) calibrate() {
 
 		for j := int64(0); j < s.width; j++ {
 			if !s.filled[i * s.width + j] {
-				blackPointList = append(blackPointList, BlackPoint{X: j, Y: i})
+				blackPointList = append(blackPointList, coord.Point{X: j, Y: i})
 				fmt.Print("O")
 			} else {
 				fmt.Print("*")
@@ -42,6 +43,8 @@ func (s *Slicer) calibrate() {
 
 	// todo optimize with clusterisation
 
+	subSliceList := make([]*subslice.SubSlicer, 0, len(blackPointList))
+
 	for _, blackPoint := range blackPointList {
 		// try optimize/ defragmentation
 		startX := math.Max(float64(blackPoint.X) - float64(s.maxSlice) * 1.5, 0)
@@ -55,9 +58,11 @@ func (s *Slicer) calibrate() {
 			fmt.Print("Fiasko\n")
 		}
 
+		subSliceList = append(subSliceList, subSlice)
+
 		fmt.Printf("Empty fields: %d\n", subSlice.CountEmpty())
 	}
-	
+
 	// todo выбрать subslice with maximum count empties и оптимизировать их
 }
 
@@ -117,9 +122,4 @@ func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.
 	}
 
 	return &subSlicer
-}
-
-type BlackPoint struct {
-	X int64
-	Y int64
 }
