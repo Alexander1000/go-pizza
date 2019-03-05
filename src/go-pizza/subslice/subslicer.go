@@ -5,4 +5,5 @@ type SubSlicer struct {
 	Height int
 	Buffer []byte
 	Filled []bool
+	Slices []Slice
 }

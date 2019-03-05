@@ -93,8 +93,6 @@ func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.
 		}
 	}
 
-	fmt.Printf("Count slices for subslice: %d\n", len(slices))
-
 	for i := 0; i < sizeSubSlicerHeight; i++ {
 		offset := s.getOffset(int64(startX) + int64(i), int64(startY))
 		for index, filled := range s.filled[offset : offset+int64(sizeSubSlicerWidth)] {
@@ -103,6 +101,17 @@ func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.
 		for index, data := range s.stream[offset : offset+int64(sizeSubSlicerWidth)] {
 			subSlicer.Buffer[i * sizeSubSlicerWidth + index] = data
 		}
+	}
+
+	subSlicer.Slices = make([]subslice.Slice, 0, len(slices))
+
+	for _, slice := range slices {
+		nSlice := subslice.Slice{
+			X: slice.X - startX,
+			Y: slice.Y - startY,
+			Shape: slice.Shape,
+		}
+		subSlicer.Slices = append(subSlicer.Slices, nSlice)
 	}
 
 	return &subSlicer
