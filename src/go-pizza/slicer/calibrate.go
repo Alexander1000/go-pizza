@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Slicer) calibrate() {
-	blackPointList := make([]coord.Point, 0)
+	blackPointList := make([]*coord.Point, 0)
 
 	fmt.Println("Black points")
 
@@ -26,7 +26,7 @@ func (s *Slicer) calibrate() {
 
 		for j := int64(0); j < s.width; j++ {
 			if !s.filled[i * s.width + j] {
-				blackPointList = append(blackPointList, coord.Point{X: j, Y: i})
+				blackPointList = append(blackPointList, &coord.Point{X: j, Y: i})
 				fmt.Print("O")
 			} else {
 				fmt.Print("*")
@@ -44,7 +44,8 @@ func (s *Slicer) calibrate() {
 
 	// todo optimize with clusterisation
 
-	subSliceList := make([]*subslice.SubSlicer, 0, len(blackPointList))
+	// subSliceList := make([]*subslice.SubSlicer, 0, len(blackPointList))
+	subSliceList := make([]*subSliceStatistic, 0, len(blackPointList))
 
 	for _, blackPoint := range blackPointList {
 		// try optimize/ defragmentation
@@ -54,19 +55,31 @@ func (s *Slicer) calibrate() {
 		stopX := math.Min(float64(blackPoint.X) + float64(s.maxSlice) * 1.5, float64(s.width))
 		stopY := math.Min(float64(blackPoint.Y) + float64(s.maxSlice) * 1.5, float64(s.height))
 
-		subSlice := s.importToSubSlice(int64(startX), int64(startY), int64(stopX), int64(stopY))
-		if subSlice == nil {
-			fmt.Print("Fiasko\n")
-		}
+		count := s.countEmptyInSector(&coord.Point{X: int64(startX), Y: int64(startY)}, &coord.Point{X: int64(stopX), Y: int64(stopY)})
 
-		subSliceList = append(subSliceList, subSlice)
+		subSliceList = append(subSliceList, &subSliceStatistic{Point: blackPoint, CountEmpty: count})
 	}
 
-	sort.Sort(subslice.Sort(subSliceList))
+	sort.Sort(sortSubSliceStatistic(subSliceList))
 
 	for _, sbSlice := range subSliceList {
-		fmt.Printf("Empty fields: %d\n", sbSlice.CountEmpty())
+		fmt.Printf("Empty fields: %d\n", sbSlice.CountEmpty)
 	}
+}
+
+func (s *Slicer) countEmptyInSector(start *coord.Point, stop *coord.Point) int {
+	sizeSubSlicerWidth := stop.X - start.X
+	sizeSubSlicerHeight := stop.Y - start.Y
+	count := 0
+	for i := int64(0); i < sizeSubSlicerHeight; i++ {
+		offset := s.getOffset(start.X, start.Y + int64(i))
+		for j := int64(0); j < sizeSubSlicerWidth; j++ {
+			if !s.filled[offset + j] {
+				count++
+			}
+		}
+	}
+	return count
 }
 
 func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.SubSlicer {
@@ -125,4 +138,23 @@ func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.
 	}
 
 	return &subSlicer
+}
+
+type subSliceStatistic struct {
+	Point *coord.Point
+	CountEmpty int
+}
+
+type sortSubSliceStatistic []*subSliceStatistic
+
+func (s sortSubSliceStatistic) Len() int {
+	return len(s)
+}
+
+func (s sortSubSliceStatistic) Less(i, j int) bool {
+	return s[i].CountEmpty > s[j].CountEmpty
+}
+
+func (s sortSubSliceStatistic) Swap(i, j int) {
+	s[j], s[i] = s[i], s[j]
 }
