@@ -57,6 +57,8 @@ func (s *Slicer) calibrate() {
 
 		fmt.Printf("Empty fields: %d\n", subSlice.CountEmpty())
 	}
+	
+	// todo выбрать subslice with maximum count empties и оптимизировать их
 }
 
 func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.SubSlicer {
