@@ -56,6 +56,10 @@ func (s *Slicer) calibrate() {
 
 	for _, sbSlice := range subSliceList {
 		fmt.Printf("Empty fields: %d\n", sbSlice.CountEmpty)
+		// todo import to sub slice
+		// todo iterate while not get perfect result
+		// todo import best result in main matrix
+		// todo recheck
 	}
 }
 
