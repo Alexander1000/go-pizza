@@ -50,43 +50,62 @@ func (s *Slicer) calibrate() {
 		stopX := math.Min(float64(blackPoint.X) + float64(s.maxSlice) * 1.2, float64(s.width))
 		stopY := math.Min(float64(blackPoint.Y) + float64(s.maxSlice) * 1.2, float64(s.height))
 
-		sizeSubSlicerWidth := int(stopX - startX)
-		sizeSubSlicerHeight := int(stopY - startY)
-
-		subSlicer := subslice.SubSlicer{
-			Height: sizeSubSlicerHeight,
-			Width: sizeSubSlicerWidth,
-			Buffer: make([]byte, sizeSubSlicerHeight * sizeSubSlicerWidth, sizeSubSlicerHeight * sizeSubSlicerWidth),
-			Filled: make([]bool, sizeSubSlicerHeight * sizeSubSlicerWidth, sizeSubSlicerHeight * sizeSubSlicerWidth),
+		subSlice := s.importToSubSlice(int64(startX), int64(startY), int64(stopX), int64(stopY))
+		if subSlice == nil {
+			fmt.Print("Fiasko\n")
 		}
+	}
+}
 
-		slices := make([]Slice, 0)
-		for x := startX; x < stopX; x++ {
-			for y := startY; y < stopY; y++ {
-				slice := s.findSlice(int64(x), int64(y))
-				if slice != nil {
-					if slice.X >= int64(startX) &&
-						slice.Y >= int64(startY) &&
-						slice.X + int64(slice.Shape.Width) <= int64(stopX) &&
-						slice.Y + int64(slice.Shape.Height) <= int64(stopY) {
+func (s *Slicer) importToSubSlice(startX, startY, stopX, stopY int64) *subslice.SubSlicer {
+	sizeSubSlicerWidth := int(stopX - startX)
+	sizeSubSlicerHeight := int(stopY - startY)
+
+	subSlicer := subslice.SubSlicer{
+		Height: sizeSubSlicerHeight,
+		Width: sizeSubSlicerWidth,
+		Buffer: make([]byte, sizeSubSlicerHeight * sizeSubSlicerWidth, sizeSubSlicerHeight * sizeSubSlicerWidth),
+		Filled: make([]bool, sizeSubSlicerHeight * sizeSubSlicerWidth, sizeSubSlicerHeight * sizeSubSlicerWidth),
+	}
+
+	// copy cross slices
+	slices := make([]Slice, 0)
+	for x := startX; x < stopX; x++ {
+		for y := startY; y < stopY; y++ {
+			slice := s.findSlice(int64(x), int64(y))
+			if slice != nil {
+				if slice.X >= int64(startX) &&
+					slice.Y >= int64(startY) &&
+					slice.X + int64(slice.Shape.Width) <= int64(stopX) &&
+					slice.Y + int64(slice.Shape.Height) <= int64(stopY) {
+					found := false
+					for _, tSlice := range slices {
+						if tSlice.X == slice.X && tSlice.Y == slice.Y {
+							found = true
+							break
+						}
+					}
+					if !found {
 						slices = append(slices, *slice)
 					}
 				}
 			}
 		}
+	}
 
-		fmt.Printf("Count slices for subslice: %d\n", len(slices))
+	fmt.Printf("Count slices for subslice: %d\n", len(slices))
 
-		for i := 0; i < sizeSubSlicerHeight; i++ {
-			offset := s.getOffset(int64(startX) + int64(i), int64(startY))
-			for index, filled := range s.filled[offset : offset+int64(sizeSubSlicerWidth)] {
-				subSlicer.Filled[i * sizeSubSlicerWidth + index] = filled
-			}
-			for index, data := range s.stream[offset : offset+int64(sizeSubSlicerWidth)] {
-				subSlicer.Buffer[i * sizeSubSlicerWidth + index] = data
-			}
+	for i := 0; i < sizeSubSlicerHeight; i++ {
+		offset := s.getOffset(int64(startX) + int64(i), int64(startY))
+		for index, filled := range s.filled[offset : offset+int64(sizeSubSlicerWidth)] {
+			subSlicer.Filled[i * sizeSubSlicerWidth + index] = filled
+		}
+		for index, data := range s.stream[offset : offset+int64(sizeSubSlicerWidth)] {
+			subSlicer.Buffer[i * sizeSubSlicerWidth + index] = data
 		}
 	}
+
+	return &subSlicer
 }
 
 type BlackPoint struct {
