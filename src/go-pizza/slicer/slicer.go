@@ -22,7 +22,7 @@ func (s *Slicer) getOffset(x, y int64) int64 {
 func (s *Slicer) getStreamForShape(x, y int64, shape shape.Shape) []byte {
 	stream := make([]byte, 0, shape.Width * shape.Height)
 	for i := 0; i < shape.Height; i++ {
-		offset := s.getOffset(x + int64(i), y)
+		offset := s.getOffset(x, y + int64(i))
 		for j := 0; j < shape.Width; j++ {
 			stream = append(stream, s.stream[offset + int64(j)])
 		}

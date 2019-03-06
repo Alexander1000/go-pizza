@@ -43,3 +43,14 @@ func (s *SubSlicer) validateShapeForFill(x, y int, shape shape.Shape) bool {
 	}
 	return true
 }
+
+func (s *SubSlicer) getStreamForShape(x, y int, shape shape.Shape) []byte {
+	stream := make([]byte, 0, shape.Width * shape.Height)
+	for i := 0; i < shape.Height; i++ {
+		offset := s.getOffset(x, y + i)
+		for j := 0; j < shape.Width; j++ {
+			stream = append(stream, s.Buffer[offset + j])
+		}
+	}
+	return stream
+}

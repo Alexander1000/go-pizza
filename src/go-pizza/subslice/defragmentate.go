@@ -34,7 +34,16 @@ func (s *SubSlicer) validateShape(x, y int, shape *shape.Shape) bool {
 		return false
 	}
 
-	// todo check assorti
+	assorti := make(map[byte]bool, 2)
+	stream := s.getStreamForShape(x, y, *shape)
+	for _, data := range stream {
+		assorti[data] = true
+	}
+
+	// todo пробросить min size of slice
+	if len(assorti) != 2 {
+		return false
+	}
 
 	return true
 }
