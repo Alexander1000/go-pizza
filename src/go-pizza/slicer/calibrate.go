@@ -33,7 +33,7 @@ func (s *Slicer) calibrate() {
 	for _, sbSlice := range subSliceList {
 		fmt.Printf("Empty fields: %d\n", sbSlice.CountEmpty)
 		subSlice := s.importToSubSlice(s.getRectangleAroundPoint(sbSlice.Point))
-		subSlice.Defragmentate()
+		subSlice.Defragmentate(s.shapeList)
 		// todo iterate while not get perfect result
 		// todo import best result in main matrix
 		// todo recheck

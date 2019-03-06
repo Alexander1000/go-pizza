@@ -12,6 +12,7 @@ type Slicer struct {
 	minSlice int
 	maxSlice int
 	slices []Slice
+	shapeList []shape.Shape
 }
 
 func (s *Slicer) getOffset(x, y int64) int64 {

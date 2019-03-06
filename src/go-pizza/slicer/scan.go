@@ -8,13 +8,13 @@ import (
 
 func (s *Slicer) Scan() {
 	s.slices = make([]Slice, 0)
-	shapeList := shape.Generate(s.minSlice, s.maxSlice)
-	sort.Sort(shape.Sort(shapeList))
+	s.shapeList = shape.Generate(s.minSlice, s.maxSlice)
+	sort.Sort(shape.Sort(s.shapeList))
 
 	// первичная разметка
 	for i := int64(0); i < s.height; i++ {
 		for j := int64(0); j < s.width; j++ {
-			for _, shape := range shapeList {
+			for _, shape := range s.shapeList {
 				if s.validateShape(j, i, shape) {
 					s.fill(j, i, shape)
 					break
@@ -23,9 +23,6 @@ func (s *Slicer) Scan() {
 		}
 	}
 
-	for _, slice := range s.slices {
-		fmt.Printf("(x: %d; y: %d; shape(height: %d; width: %d))\n", slice.X, slice.Y, slice.Shape.Height, slice.Shape.Width)
-	}
 	fmt.Printf("count slices: %d\n", len(s.slices))
 	countEmpty := 0
 	for _, filled := range s.filled {
