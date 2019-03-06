@@ -1,5 +1,9 @@
 package subslice
 
+import (
+	"go-pizza/shape"
+)
+
 type SubSlicer struct {
 	Width int
 	Height int
@@ -7,6 +11,10 @@ type SubSlicer struct {
 	Filled []bool
 	Slices []Slice
 	countEmpty *int
+}
+
+func (s *SubSlicer) getOffset(x, y int) int {
+	return y * s.Width + x
 }
 
 func (s *SubSlicer) CountEmpty() int {
@@ -22,4 +30,16 @@ func (s *SubSlicer) CountEmpty() int {
 	}
 	s.countEmpty = &count
 	return count
+}
+
+func (s *SubSlicer) validateShapeForFill(x, y int, shape shape.Shape) bool {
+	for i := 0; i < shape.Height; i++ {
+		offset := s.getOffset(x, y + i)
+		for j := 0; j < shape.Width; j++ {
+			if s.Filled[offset + j] {
+				return false
+			}
+		}
+	}
+	return true
 }

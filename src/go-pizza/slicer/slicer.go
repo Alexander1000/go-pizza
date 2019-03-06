@@ -32,7 +32,7 @@ func (s *Slicer) getStreamForShape(x, y int64, shape shape.Shape) []byte {
 
 func (s *Slicer) validateShapeForFill(x, y int64, shape shape.Shape) bool {
 	for i := 0; i < shape.Height; i++ {
-		offset := s.getOffset(x + int64(i), y)
+		offset := s.getOffset(x, y + int64(i))
 		for j := 0; j < shape.Width; j++ {
 			if s.filled[offset + int64(j)] {
 				return false
